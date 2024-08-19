@@ -1,2 +1,6 @@
 OAI_CONFIG_LIST
-
+*/
+*/
+*.py
+!image_captioning.py
+.venv/
