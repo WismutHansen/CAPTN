@@ -34,5 +34,5 @@ and then
 python -m image_captioning_florence
 ```
 
-you'll be prompted for the folder path and everything else runs automatically.
+you'll be prompted for the folder path and can optionally provide information on the contents of the images, everything else runs automatically.
 

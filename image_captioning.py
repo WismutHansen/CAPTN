@@ -126,7 +126,7 @@ def generate_image_description(image_path, config):
                     "content": [
                         {
                             "type": "text",
-                            "text": "Describe this photo depicting sks man",
+                            "text": "Provide a detailed description of the image",
                         },
                         {
                             "type": "image_url",
