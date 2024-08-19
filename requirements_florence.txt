@@ -7,3 +7,4 @@ setuptools
 transformers
 timm 
 einops
+pillow-avif-plugin
