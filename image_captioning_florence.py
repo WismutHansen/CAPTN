@@ -5,6 +5,7 @@ from transformers import AutoProcessor, AutoModelForCausalLM
 from unittest.mock import patch
 from transformers.dynamic_module_utils import get_imports
 import pillow_avif
+import shutil
 
 SUPPORTED_FORMATS = (
     ".jpg",
@@ -84,42 +85,33 @@ def get_folder_path():
 def convert_images_to_jpeg(folder_path):
     """
     Converts all non-JPEG images in a folder to JPEG format and saves them in a subfolder named "JPEGs".
-    Then, all files are renamed sequentially with a .jpeg extension as 001.jpeg, 002.jpeg, etc.
+    Then, all files are copied sequentially with a .jpeg extension as 001.jpeg, 002.jpeg, etc.
     """
     jpeg_folder = os.path.join(folder_path, "JPEGs")
     if not os.path.exists(jpeg_folder):
         os.makedirs(jpeg_folder)
 
-    # First, convert non-JPEG images to JPEG and save them in the "JPEGs" folder
+    # Supported formats
     images = [
         f for f in os.listdir(folder_path) if f.lower().endswith(SUPPORTED_FORMATS)
     ]
 
-    for image in images:
+    # Counter for sequential naming
+    for i, image in enumerate(sorted(images), start=1):
         image_path = os.path.join(folder_path, image)
-        if image.lower().endswith((".jpeg", ".jpg")):
-            # Rename JPEG/JPG images directly to have .jpeg extension and move them to the new folder
-            new_image_name = os.path.splitext(image)[0] + ".jpeg"
-            new_image_path = os.path.join(jpeg_folder, new_image_name)
-            if not os.path.exists(new_image_path):
-                os.rename(image_path, new_image_path)
-        else:
-            # Convert other formats to JPEG
-            with Image.open(image_path) as img:
-                img = img.convert("RGB")
-                new_image_name = os.path.splitext(image)[0] + ".jpeg"
-                new_image_path = os.path.join(jpeg_folder, new_image_name)
-                img.save(new_image_path, "JPEG")
-
-    # Now, rename all files in the "JPEGs" folder sequentially with a .jpeg extension
-    jpeg_images = sorted(os.listdir(jpeg_folder))
-
-    for i, image in enumerate(jpeg_images, start=1):
-        old_image_path = os.path.join(jpeg_folder, image)
         new_filename = f"{i:03d}.jpeg"
         new_image_path = os.path.join(jpeg_folder, new_filename)
-        os.rename(old_image_path, new_image_path)
-        print(f"Renamed {old_image_path} to {new_image_path}")
+
+        if image.lower().endswith((".jpeg", ".jpg")):
+            # Copy and rename JPEG/JPG images
+            shutil.copy(image_path, new_image_path)
+        else:
+            # Convert other formats to JPEG and rename
+            with Image.open(image_path) as img:
+                img = img.convert("RGB")
+                img.save(new_image_path, "JPEG")
+
+        print(f"Copied and renamed {image_path} to {new_image_path}")
 
     return jpeg_folder
 

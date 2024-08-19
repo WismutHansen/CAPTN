@@ -2,6 +2,7 @@ import os
 import openai
 import base64
 from PIL import Image
+import shutil
 
 SUPPORTED_FORMATS = (
     ".jpg",
@@ -99,7 +100,7 @@ def convert_images_to_jpeg(folder_path):
         old_image_path = os.path.join(jpeg_folder, image)
         new_filename = f"{i:03d}.jpeg"
         new_image_path = os.path.join(jpeg_folder, new_filename)
-        os.rename(old_image_path, new_image_path)
+        shutil.copy(old_image_path, new_image_path)
         print(f"Renamed {old_image_path} to {new_image_path}")
 
     return jpeg_folder
