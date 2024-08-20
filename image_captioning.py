@@ -105,7 +105,7 @@ def encode_image_to_base64(image_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-def generate_image_description(image_path, config):
+def generate_image_description(image_path, config, prompt):
     """
     Generates a description for the image using the OpenAI API or a local vision model depending on the configuration.
     """
@@ -126,7 +126,7 @@ def generate_image_description(image_path, config):
                     "content": [
                         {
                             "type": "text",
-                            "text": "Provide a detailed description of the image",
+                            "text": prompt,
                         },
                         {
                             "type": "image_url",
@@ -169,11 +169,17 @@ def main():
     jpeg_folder = convert_images_to_jpeg(folder_path)
     print(f"Converted images are saved in {jpeg_folder}.")
 
+    prompt = input(
+        "Please provide an image prompt, or leave empty for default prompt: "
+    )
+    if prompt == "":
+        prompt = "Provide a detailed description of the image"
+
     for filename in os.listdir(jpeg_folder):
         if filename.lower().endswith(".jpeg"):
             image_path = os.path.join(jpeg_folder, filename)
             print(f"Processing {image_path}...")
-            description = generate_image_description(image_path, config)
+            description = generate_image_description(image_path, config, prompt)
             write_description_to_file(image_path, description)
 
 
