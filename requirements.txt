@@ -1,2 +1,3 @@
 openai
 pillow-avif-plugin
+pillow
