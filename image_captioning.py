@@ -3,6 +3,8 @@ import openai
 import base64
 from PIL import Image
 import shutil
+import re
+
 
 SUPPORTED_FORMATS = (
     ".jpg",
@@ -146,16 +148,24 @@ def generate_image_description(image_path, config, prompt):
         return None
 
 
-def write_description_to_file(image_path, description):
+def write_description_to_file(image_path, description, keyword=None, wreplace=None):
     """
     Writes the image description to a text file.
     """
     if description is not None:
         base_name = os.path.splitext(image_path)[0]
         description_file_path = f"{base_name}.txt"
+
+        if keyword is not None and wreplace is not None:
+            description = re.sub(wreplace, keyword, description, flags=re.IGNORECASE)
+        elif keyword is not None and wreplace is None:
+            description = keyword + ", " + description
+
         with open(description_file_path, "w", encoding="utf-8") as file:
             file.write(str(description))
         print(f"Description written to {description_file_path}")
+
+
 
 
 def main():
@@ -174,6 +184,14 @@ def main():
     )
     if prompt == "":
         prompt = "Provide a detailed description of the image"
+    keyword = input("Please provide a keyword to be added to the description (optional): ")
+    if keyword!= "":
+        wreplace = input("Please provide a word to be replaced with the keyword (optional): ")
+        if wreplace == "":
+            wreplace = None
+    else
+       keyword = None
+       wreplace = None
 
     for filename in os.listdir(jpeg_folder):
         if filename.lower().endswith(".jpeg"):

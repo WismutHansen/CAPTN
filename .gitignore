@@ -6,4 +6,5 @@ OAI_CONFIG_LIST
 !image_captioning_florence.py
 !requirements.txt
 !requirements_florence.txt
+!keywordreplace.py
 .venv/
