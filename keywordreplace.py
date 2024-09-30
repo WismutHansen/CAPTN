@@ -1,4 +1,11 @@
+"""
+Use this script to easily add keywords
+to existing caption files
+in a folder
+"""
+
 import os
+
 
 def get_folder_location():
     while True:
@@ -8,6 +15,7 @@ def get_folder_location():
         else:
             print("Invalid folder path. Please try again.")
 
+
 def get_keyword():
     while True:
         keyword = input("Enter the keyword to replace with: ")
@@ -16,6 +24,7 @@ def get_keyword():
         else:
             print("Keyword cannot be empty. Please try again.")
 
+
 def get_word_to_replace():
     while True:
         word_to_replace = input("Enter the word to replace: ")
@@ -23,6 +32,7 @@ def get_word_to_replace():
             return word_to_replace
         else:
             print("Word to replace cannot be empty. Please try again.")
+
 
 def replace_words_in_folder(folder_path, keyword, word_to_replace):
     for filename in os.listdir(folder_path):
@@ -35,6 +45,7 @@ def replace_words_in_folder(folder_path, keyword, word_to_replace):
                 file.write(new_text)
                 file.truncate()
 
+
 def main():
     folder_path = get_folder_location()
     keyword = get_keyword()
@@ -43,5 +54,7 @@ def main():
     replace_words_in_folder(folder_path, keyword, word_to_replace)
     print("Replacement complete!")
 
+
 if __name__ == "__main__":
     main()
+

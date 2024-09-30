@@ -7,4 +7,5 @@ OAI_CONFIG_LIST
 !requirements.txt
 !requirements_florence.txt
 !keywordreplace.py
+!utils.py
 .venv/
