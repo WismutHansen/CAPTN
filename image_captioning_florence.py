@@ -8,13 +8,13 @@ from utils import get_folder_path, convert_images_to_jpeg, write_description_to_
 
 
 # Workaround to skip flash-attn import
-def fixed_get_imports(filename: str | os.PathLike) -> list[str]:
-    """Workaround for FlashAttention"""
-    if os.path.basename(filename) != "modeling_florence2.py":
-        return get_imports(filename)
-    imports = get_imports(filename)
-    imports.remove("flash_attn")
-    return imports
+# def fixed_get_imports(filename: str | os.PathLike) -> list[str]:
+#    """Workaround for FlashAttention"""
+#    if os.path.basename(filename) != "modeling_florence2.py":
+#        return get_imports(filename)
+#    imports = get_imports(filename)
+#    imports.remove("flash_attn")
+#    return imports
 
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -22,32 +22,27 @@ device = "cuda:0" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
 # Use patch to override the get_imports function when loading the model
-with patch("transformers.dynamic_module_utils.get_imports", fixed_get_imports):
-    model = (
-        AutoModelForCausalLM.from_pretrained(
-            "microsoft/Florence-2-large-ft", trust_remote_code=True
-        )
-        .to(device)
-        .eval()
-    )
-    processor = AutoProcessor.from_pretrained(
+# with patch("transformers.dynamic_module_utils.get_imports", fixed_get_imports):
+model = (
+    AutoModelForCausalLM.from_pretrained(
         "microsoft/Florence-2-large-ft", trust_remote_code=True
     )
+    .to(device)
+    .eval()
+)
+processor = AutoProcessor.from_pretrained(
+    "microsoft/Florence-2-large-ft", trust_remote_code=True
+)
 
 
-def generate_image_description(image_path, task_prompt, text_input=None):
+def generate_image_description(image_path, task_prompt):
     """
     Generates a description for the image using the Florence 2 model.
     """
     try:
         image = Image.open(image_path)
 
-        if text_input is None:
-            prompt = task_prompt
-        else:
-            prompt = task_prompt + text_input
-
-        inputs = processor(text=prompt, images=image, return_tensors="pt").to(
+        inputs = processor(text=task_prompt, images=image, return_tensors="pt").to(
             device, torch_dtype
         )
         generated_ids = model.generate(
@@ -75,12 +70,6 @@ def main():
     print(f"Converted images are saved in {jpeg_folder}.")
 
     task_prompt = "<MORE_DETAILED_CAPTION>"
-    text_input = input(
-        "Enter additional information regarding the subjects in the images (optional): "
-    )
-
-    if text_input == "":
-        text_input = None
 
     keyword = input(
         "Please provide a keyword to be added to the description (optional): "
@@ -100,7 +89,8 @@ def main():
             print(f"Processing {image_path}...")
 
             description = generate_image_description(
-                image_path, task_prompt, text_input
+                image_path,
+                task_prompt,
             )
             write_description_to_file(image_path, description, keyword, wreplace)
 
