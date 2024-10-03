@@ -6,17 +6,6 @@ from unittest.mock import patch
 from transformers.dynamic_module_utils import get_imports
 from utils import get_folder_path, convert_images_to_jpeg, write_description_to_file
 
-
-# Workaround to skip flash-attn import
-# def fixed_get_imports(filename: str | os.PathLike) -> list[str]:
-#    """Workaround for FlashAttention"""
-#    if os.path.basename(filename) != "modeling_florence2.py":
-#        return get_imports(filename)
-#    imports = get_imports(filename)
-#    imports.remove("flash_attn")
-#    return imports
-
-
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
